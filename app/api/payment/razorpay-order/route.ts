@@ -1,0 +1,23 @@
+import { NextRequest, NextResponse } from "next/server";
+const Razorpay: any = require("razorpay");
+
+export async function POST(req: NextRequest) {
+  try {
+    // Read secrets at runtime
+    const razorpayKeyId = process.env.RAZORPAY_KEY_ID;
+    const razorpayKeySecret = process.env.RAZORPAY_KEY_SECRET;
+    if (!razorpayKeyId || !razorpayKeySecret) {
+      return NextResponse.json({ message: "Razorpay keys not set" }, { status: 500 });
+    }
+    const razorpay = new Razorpay({ key_id: razorpayKeyId, key_secret: razorpayKeySecret });
+    const { amount, currency } = await req.json();
+    const order = await razorpay.orders.create({
+      amount: Math.round(amount * 100), // Razorpay expects paise
+      currency,
+      payment_capture: 1,
+    });
+    return NextResponse.json({ orderId: order.id, amount: order.amount, key: razorpayKeyId });
+  } catch (err) {
+    return NextResponse.json({ message: "Failed to create payment order" }, { status: 500 });
+  }
+}

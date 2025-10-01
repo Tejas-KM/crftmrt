@@ -1,7 +1,6 @@
 "use client"
 
-import type React from "react"
-import { createContext, useContext, useReducer, useEffect, useCallback } from "react"
+import React, { createContext, useContext, useReducer, useEffect, useCallback } from "react"
 import { useAuth } from "@/contexts/AuthContext"
 import { toast } from "@/hooks/use-toast"
 
@@ -172,12 +171,18 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
     loadCart();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, token]);
+  }, [user, token, sessionToken]);
 
-  // Save cart to backend or localStorage whenever it changes
+  // Save cart to backend or localStorage whenever it changes, but not on initial load
+  const [cartLoaded, setCartLoaded] = React.useState(false);
   useEffect(() => {
+    setCartLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (!cartLoaded) return;
     const authHeader = sessionToken ? sessionToken : token;
-    if (user && authHeader) {
+    if (user && authHeader && state.items.length > 0) {
       // Save to backend, always as { items, total, itemCount }
       fetch("/api/user", {
         method: "PATCH",
@@ -187,11 +192,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         },
         body: JSON.stringify({ cart: { items: state.items, total: state.total, itemCount: state.itemCount } }),
       });
-    } else {
+    } else if (!user) {
       // Guest: save to localStorage, always as { items, total, itemCount }
       localStorage.setItem("craftmart-cart", JSON.stringify({ items: state.items, total: state.total, itemCount: state.itemCount }));
     }
-  }, [state, user, token]);
+  }, [state, user, token, sessionToken, cartLoaded]);
 
   const addItem = (product: Product) => {
     dispatch({ type: "ADD_ITEM", payload: product })

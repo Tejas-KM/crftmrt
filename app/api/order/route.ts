@@ -31,7 +31,15 @@ export async function POST(req: NextRequest) {
     }
     if (!email) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 
-    const { address, paymentMode, cardDetails, upiId } = await req.json();
+    const {
+      address,
+      paymentMode,
+      cardDetails,
+      upiId,
+      razorpayPaymentId,
+      razorpayOrderId,
+      razorpaySignature,
+    } = await req.json();
     const client = await clientPromise;
     const db = client.db();
     const user = await db.collection("users").findOne({ email });
@@ -40,13 +48,22 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "Cart is empty" }, { status: 400 });
     }
 
-    // Simulate payment for online/card (in real app, integrate payment gateway)
     let paymentStatus = "pending";
     if (paymentMode === "cod") {
       paymentStatus = "success";
     } else if (paymentMode === "card" || paymentMode === "upi") {
-      // Here you would integrate with payment gateway
-      // For now, simulate success
+      // Validate Razorpay payment
+      if (!razorpayPaymentId || !razorpayOrderId || !razorpaySignature) {
+        return NextResponse.json({ message: "Payment not verified" }, { status: 400 });
+      }
+      // Verify signature
+      const crypto = await import("crypto");
+      const generatedSignature = crypto.createHmac("sha256", process.env.RAZORPAY_KEY_SECRET!)
+        .update(razorpayOrderId + "|" + razorpayPaymentId)
+        .digest("hex");
+      if (generatedSignature !== razorpaySignature) {
+        return NextResponse.json({ message: "Invalid payment signature" }, { status: 400 });
+      }
       paymentStatus = "success";
     }
 

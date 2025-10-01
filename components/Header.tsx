@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Search, ShoppingCart, Menu, X, Heart, Sun, Moon, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { HeaderSearchBar } from "@/components/HeaderSearchBar"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 
@@ -13,7 +14,7 @@ import { useTheme } from "@/contexts/ThemeContext"
 import { useAuth } from "@/contexts/AuthContext"
 import { categories } from "@/data/products"
 
-export const Header = () => {
+export const Header = ({ compact }: { compact?: boolean }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [showNavbar, setShowNavbar] = useState(true)
@@ -25,23 +26,93 @@ export const Header = () => {
   const [showProfileDropdown, setShowProfileDropdown] = useState(false)
 
   useEffect(() => {
-    let ticking = false;
+    let lastScrollY = window.scrollY;
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
       setIsScrolled(currentScrollY > 50);
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          setShowNavbar(currentScrollY < 50 || currentScrollY < lastScrollY);
-          setLastScrollY(currentScrollY);
-          ticking = false;
-        });
-        ticking = true;
+      if (currentScrollY > lastScrollY) {
+        // Scrolling down
+        setShowNavbar(false);
+      } else {
+        // Scrolling up
+        setShowNavbar(true);
       }
+      lastScrollY = currentScrollY;
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-    // eslint-disable-next-line
-  }, [lastScrollY]);
+  }, []);
+
+  // Compact header (logo + search + icons) for minimal pages
+  if (compact) {
+    return (
+      <header className={`bg-background border-b border-border/50 sticky top-0 z-50 backdrop-blur-sm transition-all duration-500 ease-in-out ${showNavbar ? 'translate-y-0 opacity-100 pointer-events-auto' : '-translate-y-full opacity-0 pointer-events-none'}`}>
+        <div className="container mx-auto px-4 py-2">
+          <div className="flex items-center justify-between">
+            <Link href="/" className="flex items-center">
+              <h1 className="text-xl font-luxury font-bold text-primary">CraftMart</h1>
+            </Link>
+
+            {/* smaller compact search, hidden on scroll down */}
+            <div className={`flex-1 mx-3 hidden sm:flex transition-all duration-300 ${showNavbar ? 'opacity-100 max-w-md' : 'opacity-0 max-w-0 pointer-events-none'}`}>
+              <div className="w-full">
+                <div className="relative">
+                  <input
+                    aria-label="Search materials"
+                    placeholder="Search materials..."
+                    className="w-full rounded-full border px-3 py-2 text-sm bg-white/90"
+                  />
+                  <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="icon" onClick={toggleTheme} className="hover-gold">
+                {theme === "light" ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+              </Button>
+
+              <Link href="/wishlist">
+                <Button variant="ghost" size="icon" className="relative hover-gold">
+                  <Heart className="w-5 h-5 text-darker" />
+                  {wishlistState.items.length > 0 && (
+                    <Badge className="absolute -top-1 -right-1 bg-accent text-accent-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center p-0">
+                      {wishlistState.items.length}
+                    </Badge>
+                  )}
+                </Button>
+              </Link>
+
+              <Link href="/cart">
+                <Button variant="ghost" size="icon" className="relative hover-gold">
+                  <ShoppingCart className="w-5 h-5 text-darker" />
+                  {cartState.itemCount > 0 && (
+                    <Badge className="absolute -top-1 -right-1 bg-accent text-accent-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center p-0">
+                      {cartState.itemCount}
+                    </Badge>
+                  )}
+                </Button>
+              </Link>
+
+              {user ? (
+                <Link href="/profile">
+                  <Button variant="ghost" size="icon" className="hidden sm:flex" aria-label="Profile">
+                    <User className="w-5 h-5 text-darker" />
+                  </Button>
+                </Link>
+              ) : (
+                <Link href="/login">
+                  <Button variant="ghost" size="icon" className="hidden sm:flex" aria-label="Login">
+                    <User className="w-5 h-5 text-darker" />
+                  </Button>
+                </Link>
+              )}
+            </div>
+          </div>
+        </div>
+      </header>
+    )
+  }
 
   return (
     <header
@@ -62,13 +133,7 @@ export const Header = () => {
 
           {/* Search Bar - Desktop */}
           <div className="hidden md:flex flex-1 max-w-md mx-8">
-            <div className="relative w-full">
-                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-darker w-4 h-4" />
-              <Input
-                placeholder="Search materials..."
-                className="pl-10 pr-4 py-2 border-accent/20 focus:border-accent"
-              />
-            </div>
+            <HeaderSearchBar />
           </div>
 
           {/* Right Actions */}
@@ -109,17 +174,18 @@ export const Header = () => {
             {user ? (
               <div className="relative">
                 <Button
-                  className="hidden md:flex bg-accent text-accent-foreground hover:bg-accent-dark"
+                  variant="ghost"
+                  size="icon"
+                  className="hidden md:flex"
                   onClick={() => setShowProfileDropdown((v) => !v)}
+                  aria-label="Profile"
                 >
-                  <User className="w-4 h-4 mr-2 text-darker" />
-                  {user.email.split("@")[0]}
+                  <User className="w-5 h-5 text-darker" />
                 </Button>
                 {showProfileDropdown && (
                   <div className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded shadow-lg z-50">
                     <div className="px-4 py-3 border-b">
                       <div className="font-semibold text-darker">{user.email}</div>
-                      {/* Add more user info here if available */}
                     </div>
                     <Link href="/profile">
                       <div className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Profile</div>
@@ -135,9 +201,8 @@ export const Header = () => {
               </div>
             ) : (
               <Link href="/login">
-                <Button className="hidden md:flex bg-accent text-accent-foreground hover:bg-accent-dark">
-                  <User className="w-4 h-4 mr-2 text-darker" />
-                  Login / Sign Up
+                <Button variant="ghost" size="icon" className="hidden md:flex" aria-label="Login">
+                  <User className="w-5 h-5 text-darker" />
                 </Button>
               </Link>
             )}
@@ -178,10 +243,7 @@ export const Header = () => {
         <div className="md:hidden bg-background border-t border-border/50 animate-luxury-fade">
           <div className="container mx-auto px-4 py-4 space-y-4">
             {/* Mobile Search */}
-            <div className="relative">
-                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-darker w-4 h-4" />
-              <Input placeholder="Search materials..." className="pl-10 pr-4 py-2" />
-            </div>
+            <HeaderSearchBar mobile />
 
             {/* Mobile Categories */}
             <nav className="space-y-2">
@@ -210,11 +272,13 @@ export const Header = () => {
             {user ? (
               <div className="w-full">
                 <Button
-                  className="w-full bg-accent text-accent-foreground hover:bg-accent-dark"
+                  variant="ghost"
+                  size="icon"
+                  className="w-full"
                   onClick={() => setShowProfileDropdown((v) => !v)}
+                  aria-label="Profile"
                 >
-                  <User className="w-4 h-4 mr-2" />
-                  {user.email.split("@")[0]}
+                  <User className="w-5 h-5" />
                 </Button>
                 {showProfileDropdown && (
                   <div className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded shadow-lg z-50">
@@ -235,9 +299,8 @@ export const Header = () => {
               </div>
             ) : (
               <Link href="/login">
-                <Button className="w-full bg-accent text-accent-foreground hover:bg-accent-dark">
-                  <User className="w-4 h-4 mr-2" />
-                  Login / Sign Up
+                <Button variant="ghost" size="icon" className="w-full" aria-label="Login">
+                  <User className="w-5 h-5" />
                 </Button>
               </Link>
             )}

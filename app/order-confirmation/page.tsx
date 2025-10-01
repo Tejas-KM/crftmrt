@@ -5,7 +5,12 @@ export default function OrderConfirmationPage() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center py-12 px-2 bg-background text-foreground">
       <Card className="w-full max-w-md p-8 flex flex-col items-center gap-6">
-        <svg width="64" height="64" fill="none" viewBox="0 0 24 24" className="text-green-500 mb-2"><path fill="currentColor" d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10Zm-1.293-6.707 6-6a1 1 0 0 0-1.414-1.414l-5.293 5.293-2.293-2.293A1 1 0 0 0 6.293 12.707l3 3a1 1 0 0 0 1.414 0Z"/></svg>
+        <span className="mb-2 inline-flex items-center justify-center" style={{ width: 64, height: 64 }}>
+          <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+            <circle cx="32" cy="32" r="28" fill="#22c55e" />
+            <path d="M20 34l8 8 16-16" stroke="#fff" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </span>
         <h1 className="text-2xl font-bold text-center">Order Placed Successfully!</h1>
         <p className="text-center text-muted-foreground">Thank you for shopping with CraftMart. Your order has been placed and will be processed soon.</p>
         <Link href="/products">

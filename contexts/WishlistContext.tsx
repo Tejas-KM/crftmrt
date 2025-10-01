@@ -103,13 +103,13 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
     }
     loadWishlist();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, token]);
+  }, [user, token, sessionToken]);
 
 
   // Save wishlist to backend or localStorage whenever it changes
   useEffect(() => {
     const authHeader = sessionToken ? sessionToken : token;
-    if (user && authHeader) {
+    if (user && authHeader && state.items.length > 0) {
       // Save to backend, always as { items: [...] }
       fetch("/api/user", {
         method: "PATCH",
@@ -119,11 +119,11 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
         },
         body: JSON.stringify({ wishlist: { items: state.items } }),
       });
-    } else {
+    } else if (!user) {
       // Guest: save to localStorage, always as { items: [...] }
       localStorage.setItem("craftmart-wishlist", JSON.stringify({ items: state.items }));
     }
-  }, [state, user, token]);
+  }, [state, user, token, sessionToken]);
 
   const addItem = (product: Product) => {
     dispatch({ type: "ADD_ITEM", payload: product });

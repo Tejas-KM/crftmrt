@@ -35,10 +35,10 @@ export const FeaturedProducts = () => {
   }
 
   return (
-    <section className="py-16 md:py-24 bg-secondary/30">
+  <section className="py-16 md:py-24 bg-secondary/30">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16 animate-luxury-fade">
-          <span className="inline-block px-4 py-2 bg-accent/10 text-accent rounded-full text-sm font-medium mb-4">
+          <span className="inline-block px-4 py-2 bg-secondary text-primary rounded-full text-sm font-medium mb-4">
             Featured Selection
           </span>
           <h2 className="text-3xl md:text-4xl font-luxury font-bold text-primary mb-6">Featured Products</h2>
@@ -64,7 +64,7 @@ export const FeaturedProducts = () => {
                   <div className="absolute inset-0 bg-gradient-to-t from-primary/60 to-transparent"></div>
 
                   {product.badge && (
-                    <Badge className="absolute top-4 left-4 bg-accent text-accent-foreground">{product.badge}</Badge>
+                    <Badge className="absolute top-4 left-4 bg-primary text-primary-foreground">{product.badge}</Badge>
                   )}
 
                   <Button
@@ -130,7 +130,7 @@ export const FeaturedProducts = () => {
 
                   {/* Stock Status */}
                   <div className="flex items-center gap-2">
-                    <div className={`w-2 h-2 rounded-full ${product.inStock ? "bg-green-500" : "bg-red-500"}`} />
+                    <div className={`w-2 h-2 rounded-full ${product.inStock ? "bg-primary" : "bg-destructive"}`} />
                     <span className={`text-xs ${product.inStock ? "text-green-600" : "text-red-600"}`}>
                       {product.inStock ? "In Stock" : "Out of Stock"}
                     </span>
@@ -148,7 +148,7 @@ export const FeaturedProducts = () => {
                     </Button>
                     <Button
                       variant="outline"
-                      className="border-accent hover:bg-accent hover:text-accent-foreground bg-transparent"
+                      className="border-primary hover:bg-primary hover:text-primary-foreground bg-transparent"
                     >
                       <Eye className="w-4 h-4" />
                     </Button>
@@ -164,7 +164,7 @@ export const FeaturedProducts = () => {
             <Button
               size="lg"
               variant="outline"
-              className="border-accent hover:bg-accent hover:text-accent-foreground bg-transparent"
+              className="border-primary hover:bg-primary hover:text-primary-foreground bg-transparent"
             >
               View All Products
             </Button>
