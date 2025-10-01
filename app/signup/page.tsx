@@ -61,12 +61,12 @@ export default function SignUpPage() {
                   <Label htmlFor="firstName">First Name</Label>
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                    <Input id="firstName" type="text" placeholder="First name" className="pl-10" required />
+                    <Input id="firstName" name="firstName" type="text" placeholder="First name" className="pl-10" required />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="lastName">Last Name</Label>
-                  <Input id="lastName" type="text" placeholder="Last name" required />
+                  <Input id="lastName" name="lastName" type="text" placeholder="Last name" required />
                 </div>
               </div>
 
@@ -76,6 +76,7 @@ export default function SignUpPage() {
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                     <Input
                       id="email"
+                      name="email"
                       type="email"
                       placeholder="Enter your email"
                       className="pl-10"
@@ -90,7 +91,7 @@ export default function SignUpPage() {
                 <Label htmlFor="phone">Phone Number</Label>
                 <div className="relative">
                   <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                  <Input id="phone" type="tel" placeholder="Enter your phone number" className="pl-10" required />
+                  <Input id="phone" name="phone" type="tel" placeholder="Enter your phone number" className="pl-10" required />
                 </div>
               </div>
 
@@ -98,6 +99,7 @@ export default function SignUpPage() {
                 <Label htmlFor="userType">I am a</Label>
                 <select
                   id="userType"
+                  name="userType"
                   className="w-full px-3 py-2 border border-input rounded-md text-sm bg-background"
                   required
                 >

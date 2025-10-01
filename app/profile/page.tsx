@@ -194,11 +194,11 @@ export default function ProfilePage() {
                       setAddressEditIdx(null);
                     }}
                   >
-                    <Input className="text-base" value={addressDraft.name} onChange={(e) => setAddressDraft((a: any) => ({ ...a, name: e.target.value }))} placeholder="Name" required />
-                    <Input className="text-base" value={addressDraft.phone} onChange={(e) => setAddressDraft((a: any) => ({ ...a, phone: e.target.value }))} placeholder="Phone" required />
-                    <Input className="text-base" value={addressDraft.pincode} onChange={(e) => setAddressDraft((a: any) => ({ ...a, pincode: e.target.value }))} placeholder="Pincode" required />
-                    <Input className="text-base" value={addressDraft.addressLine} onChange={(e) => setAddressDraft((a: any) => ({ ...a, addressLine: e.target.value }))} placeholder="Address" required />
-                    <Input className="text-base" value={addressDraft.city} onChange={(e) => setAddressDraft((a: any) => ({ ...a, city: e.target.value }))} placeholder="City" required />
+                    <Input name="name" className="text-base" value={addressDraft.name} onChange={(e) => setAddressDraft((a: any) => ({ ...a, name: e.target.value }))} placeholder="Name" required />
+                    <Input name="phone" className="text-base" value={addressDraft.phone} onChange={(e) => setAddressDraft((a: any) => ({ ...a, phone: e.target.value }))} placeholder="Phone" required />
+                    <Input name="pincode" className="text-base" value={addressDraft.pincode} onChange={(e) => setAddressDraft((a: any) => ({ ...a, pincode: e.target.value }))} placeholder="Pincode" required />
+                    <Input name="addressLine" className="text-base" value={addressDraft.addressLine} onChange={(e) => setAddressDraft((a: any) => ({ ...a, addressLine: e.target.value }))} placeholder="Address" required />
+                    <Input name="city" className="text-base" value={addressDraft.city} onChange={(e) => setAddressDraft((a: any) => ({ ...a, city: e.target.value }))} placeholder="City" required />
                     <Input className="text-base" value={addressDraft.state} onChange={(e) => setAddressDraft((a: any) => ({ ...a, state: e.target.value }))} placeholder="State" required />
                     <div className="flex gap-3 mt-2">
                       <Button className="w-1/2" type="submit" disabled={saving}>{saving ? "Saving..." : "Save"}</Button>

@@ -58,6 +58,7 @@ export default function LoginPage() {
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                   <Input
                     id="email"
+                    name="email"
                     type="email"
                     placeholder="Enter your email"
                     className="pl-10"

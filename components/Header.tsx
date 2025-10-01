@@ -48,13 +48,13 @@ export const Header = ({ compact }: { compact?: boolean }) => {
     return (
       <header className={`bg-background border-b border-border/50 sticky top-0 z-50 backdrop-blur-sm transition-all duration-500 ease-in-out ${showNavbar ? 'translate-y-0 opacity-100 pointer-events-auto' : '-translate-y-full opacity-0 pointer-events-none'}`}>
         <div className="container mx-auto px-4 py-2">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between w-full">
             <Link href="/" className="flex items-center">
               <h1 className="text-xl font-luxury font-bold text-primary">CraftMart</h1>
             </Link>
 
-            {/* smaller compact search, hidden on scroll down */}
-            <div className={`flex-1 mx-3 hidden sm:flex transition-all duration-300 ${showNavbar ? 'opacity-100 max-w-md' : 'opacity-0 max-w-0 pointer-events-none'}`}>
+            {/* smaller compact search, hidden on scroll down (desktop only) */}
+            <div className={`flex-1 mx-3 hidden sm:flex transition-all duration-300 ${showNavbar ? 'opacity-100 max-w-md' : 'opacity-0 max-w-0 pointer-events-none'}`}> 
               <div className="w-full">
                 <div className="relative">
                   <input
@@ -67,46 +67,61 @@ export const Header = ({ compact }: { compact?: boolean }) => {
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon" onClick={toggleTheme} className="hover-gold">
-                {theme === "light" ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
-              </Button>
-
+            {/* Mobile icons: all right-aligned, reduced gap */}
+            <div className="flex items-center gap-1 md:gap-2 ml-auto">
+              {/* Profile/Login */}
+              {user ? (
+                <Link href="/profile">
+                  <Button variant="ghost" size="icon" className="md:hidden" aria-label="Profile">
+                    <User className="w-5 h-5 text-darker" />
+                  </Button>
+                </Link>
+              ) : (
+                <>
+                  <Link href="/login">
+                    <Button variant="ghost" size="icon" className="md:hidden" aria-label="Login">
+                      <User className="w-5 h-5 text-darker" />
+                    </Button>
+                  </Link>
+                  <Link href="/login">
+                    <Button className="px-3 py-1 rounded text-xs font-semibold bg-primary text-primary-foreground md:hidden">
+                      Login / Sign Up
+                    </Button>
+                  </Link>
+                </>
+              )}
+              {/* Wishlist */}
               <Link href="/wishlist">
-                <Button variant="ghost" size="icon" className="relative hover-gold">
+                <Button variant="ghost" size="icon" className="relative md:hidden hover-gold">
                   <Heart className="w-5 h-5 text-darker" />
                   {wishlistState.items.length > 0 && (
-                    <Badge className="absolute -top-1 -right-1 bg-accent text-accent-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center p-0">
+                    <Badge className="absolute -top-1 -right-1 bg-accent text-accent-foreground text-xs rounded-full w-4 h-4 flex items-center justify-center p-0">
                       {wishlistState.items.length}
                     </Badge>
                   )}
                 </Button>
               </Link>
-
+              {/* Cart */}
               <Link href="/cart">
-                <Button variant="ghost" size="icon" className="relative hover-gold">
+                <Button variant="ghost" size="icon" className="relative md:hidden hover-gold">
                   <ShoppingCart className="w-5 h-5 text-darker" />
                   {cartState.itemCount > 0 && (
-                    <Badge className="absolute -top-1 -right-1 bg-accent text-accent-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center p-0">
+                    <Badge className="absolute -top-1 -right-1 bg-accent text-accent-foreground text-xs rounded-full w-4 h-4 flex items-center justify-center p-0">
                       {cartState.itemCount}
                     </Badge>
                   )}
                 </Button>
               </Link>
-
-              {user ? (
-                <Link href="/profile">
-                  <Button variant="ghost" size="icon" className="hidden sm:flex" aria-label="Profile">
-                    <User className="w-5 h-5 text-darker" />
-                  </Button>
-                </Link>
-              ) : (
-                <Link href="/login">
-                  <Button variant="ghost" size="icon" className="hidden sm:flex" aria-label="Login">
-                    <User className="w-5 h-5 text-darker" />
-                  </Button>
-                </Link>
-              )}
+              {/* Theme toggle */}
+              <Button variant="ghost" size="icon" className="md:hidden hover-gold" onClick={toggleTheme}>
+                {theme === "light" ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+              </Button>
+              {/* Menu */}
+              <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+                {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              </Button>
+              {/* Desktop icons remain unchanged below */}
+              {/* ...existing code for desktop icons... */}
             </div>
           </div>
         </div>
@@ -167,45 +182,67 @@ export const Header = ({ compact }: { compact?: boolean }) => {
               </Button>
             </Link>
 
-            <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-              {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </Button>
-
-            {user ? (
-              <div className="relative">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="hidden md:flex"
-                  onClick={() => setShowProfileDropdown((v) => !v)}
-                  aria-label="Profile"
-                >
-                  <User className="w-5 h-5 text-darker" />
-                </Button>
-                {showProfileDropdown && (
-                  <div className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded shadow-lg z-50">
-                    <div className="px-4 py-3 border-b">
-                      <div className="font-semibold text-darker">{user.email}</div>
+            <div className="flex items-center gap-2">
+              {user ? (
+                <Link href="/profile">
+                  <Button variant="ghost" size="icon" className="md:hidden" aria-label="Profile">
+                    <User className="w-5 h-5 text-darker" />
+                  </Button>
+                </Link>
+              ) : (
+                <Link href="/login">
+                  <Button variant="ghost" size="icon" className="md:hidden" aria-label="Login">
+                    <User className="w-5 h-5 text-darker" />
+                  </Button>
+                </Link>
+              )}
+              <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+                {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              </Button>
+              {/* Desktop profile icon/dropdown remains unchanged below */}
+              {user ? (
+                <div className="relative">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="hidden md:flex"
+                    onClick={() => setShowProfileDropdown((v) => !v)}
+                    aria-label="Profile"
+                  >
+                    <User className="w-5 h-5 text-darker" />
+                  </Button>
+                  {showProfileDropdown && (
+                    <div className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded shadow-lg z-50">
+                      <div className="px-4 py-3 border-b">
+                        <div className="font-semibold text-darker">{user.email}</div>
+                      </div>
+                      <Link href="/profile">
+                        <div className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Profile</div>
+                      </Link>
+                      <button
+                        className="w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600 cursor-pointer"
+                        onClick={() => { logout(); setShowProfileDropdown(false); }}
+                      >
+                        Log out
+                      </button>
                     </div>
-                    <Link href="/profile">
-                      <div className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Profile</div>
-                    </Link>
-                    <button
-                      className="w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600 cursor-pointer"
-                      onClick={() => { logout(); setShowProfileDropdown(false); }}
-                    >
-                      Log out
-                    </button>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <Link href="/login">
-                <Button variant="ghost" size="icon" className="hidden md:flex" aria-label="Login">
-                  <User className="w-5 h-5 text-darker" />
-                </Button>
-              </Link>
-            )}
+                  )}
+                </div>
+              ) : (
+                <>
+                  <Link href="/login">
+                    <Button variant="ghost" size="icon" className="hidden md:flex" aria-label="Login">
+                      <User className="w-5 h-5 text-darker" />
+                    </Button>
+                  </Link>
+                  <Link href="/login">
+                    <Button className="px-4 py-2 rounded text-sm font-semibold bg-primary text-primary-foreground hidden md:flex">
+                      Login / Sign Up
+                    </Button>
+                  </Link>
+                </>
+              )}
+            </div>
           </div>
         </div>
 
